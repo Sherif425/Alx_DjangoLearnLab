@@ -1,7 +1,10 @@
 >>> book1 = Book.objects.all()[0]
 
->>> book1 = "Nineteen Eighty-Four"
+>>> book1.title
 
->>> print(book1)
+'1984'
 
-Nineteen Eighty-Four
+>>> book1.title = 'Nineteen Eighty-Four'
+
+>>> book1.title
+'Nineteen Eighty-Four'
