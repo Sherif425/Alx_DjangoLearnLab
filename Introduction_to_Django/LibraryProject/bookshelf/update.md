@@ -1,10 +1,10 @@
->>> book1 = Book.objects.all()[0]
+>>> book = Book.objects.all()[0]
 
->>> book1.title
+>>> book.title
 
 '1984'
 
->>> book1.title = 'Nineteen Eighty-Four'
+>>> book.title = 'Nineteen Eighty-Four'
 
->>> book1.title
+>>> book.title
 'Nineteen Eighty-Four'
