@@ -1,4 +1,2 @@
->>> Book.objects.all()
-
-
-# <QuerySet [<Book: Book object (1)>]>
+>>> Book.objects.get(title="1984")
+<Book: Book object (1)>
