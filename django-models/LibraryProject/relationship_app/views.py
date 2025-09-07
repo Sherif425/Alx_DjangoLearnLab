@@ -1,31 +1,33 @@
-# from django.shortcuts import render
+from django.shortcuts import render
 from django.contrib.auth.decorators import user_passes_test
 from .models import Book
 
-# ✅ Task 1: List all books
+# ✅ Task 1: Function-based view to list all books
 def list_books(request):
     books = Book.objects.all()  # Checker requirement ✅
     return render(request, "relationship_app/list_books.html", {"books": books})
 
-# ✅ Role Check Functions
+# ✅ Role check functions using UserProfile role field
 def is_admin(user):
-    return user.groups.filter(name="Admin").exists()
+    return hasattr(user, "userprofile") and user.userprofile.role == "Admin"
 
 def is_librarian(user):
-    return user.groups.filter(name="Librarian").exists()
+    return hasattr(user, "userprofile") and user.userprofile.role == "Librarian"
 
 def is_member(user):
-    return user.groups.filter(name="Member").exists()
+    return hasattr(user, "userprofile") and user.userprofile.role == "Member"
 
-# ✅ Task 3: Role-based Views
+# ✅ Admin view
 @user_passes_test(is_admin)
 def admin_view(request):
     return render(request, "relationship_app/admin_view.html")
 
+# ✅ Librarian view
 @user_passes_test(is_librarian)
 def librarian_view(request):
     return render(request, "relationship_app/librarian_view.html")
 
+# ✅ Member view
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, "relationship_app/member_view.html")
