@@ -42,6 +42,12 @@ class CustomUser(AbstractUser):
     profile_photo = models.ImageField(upload_to="profile_photos/", null=True, blank=True)
 
     objects = CustomUserManager()
+    
+    
+class CustomUserAdmin(UserAdmin):
+    model = CustomUser
+    list_display = ["username", "email", "date_of_birth", "is_staff", "is_active"]
+
 
     def __str__(self):
         return self.username
