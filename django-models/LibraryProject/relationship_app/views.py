@@ -3,11 +3,10 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView
 from django.views.generic.detail import DetailView
 from .models import Library, Book
-from django.contrib.auth import login, logout
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-
-
-
+from django.contrib.auth import login
+from django.contrib.auth import logout
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm
 
 # Function-based view: List all books
 def list_books(request):
@@ -51,4 +50,5 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return render(request, "relationship_app/logout.html")
+
 
