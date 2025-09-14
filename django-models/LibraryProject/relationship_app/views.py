@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import DetailView
-from .models import Book, Library
-
+from .models import Library, Book
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
