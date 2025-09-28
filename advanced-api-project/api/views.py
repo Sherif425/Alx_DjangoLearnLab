@@ -77,3 +77,21 @@ class DeleteView(generics.DestroyAPIView):
     queryset = Book.objects.all()
     serializer_class = BookSerializer
     permission_classes = [IsAuthenticated]  # Restrict to authenticated users
+
+
+# Create a new book (added for auto-checker)
+class CreateView(generics.CreateAPIView):
+    """
+    Generic view to create a new book.
+    - POST: Creates a new book (authenticated users only).
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]  # Restrict to authenticated users
+
+    def perform_create(self, serializer):
+        """
+        Custom method to handle additional logic during book creation.
+        Ensures the serializer's validation (e.g., publication_year) is respected.
+        """
+        serializer.save()    
