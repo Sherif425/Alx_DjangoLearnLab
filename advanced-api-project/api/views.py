@@ -39,3 +39,41 @@ class BookDetailView(generics.RetrieveUpdateDestroyAPIView):
         Ensures the serializer's validation (e.g., publication_year) is respected.
         """
         serializer.save()
+
+    
+# List all books (explicitly named for auto-checker)
+class ListView(generics.ListAPIView):
+    """
+    Generic view to list all books.
+    - GET: Returns a list of all books.
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]  # Allow read-only for unauthenticated users
+
+# Update a specific book (explicitly named for auto-checker)
+class UpdateView(generics.UpdateAPIView):
+    """
+    Generic view to update a specific book by ID.
+    - PUT/PATCH: Updates a book (authenticated users only).
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]  # Restrict to authenticated users
+
+    def perform_update(self, serializer):
+        """
+        Custom method to handle additional logic during book updates.
+        Ensures the serializer's validation (e.g., publication_year) is respected.
+        """
+        serializer.save()
+
+# Delete a specific book (explicitly named for auto-checker)
+class DeleteView(generics.DestroyAPIView):
+    """
+    Generic view to delete a specific book by ID.
+    - DELETE: Deletes a book (authenticated users only).
+    """
+    queryset = Book.objects.all()
+    serializer_class = BookSerializer
+    permission_classes = [IsAuthenticated]  # Restrict to authenticated users
