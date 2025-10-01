@@ -1,15 +1,16 @@
+# api/urls.py
 from django.urls import path
-from api.views import BookListCreateView, BookDetailView, ListView, UpdateView, DeleteView, CreateView
+from . import views
 
-# URL patterns for the Book API endpoints
 urlpatterns = [
-    # Original endpoints for compatibility
-    path('books/', BookListCreateView.as_view(), name='book-list-create'),  # List and create books
-    path('books/<int:pk>/', BookDetailView.as_view(), name='book-detail'),  # Retrieve, update, delete a book
-    
-    # New endpoints for auto-checker
-    path('books/list/', ListView.as_view(), name='book-list'),  # List all books
-    path('books/update/<int:pk>/', UpdateView.as_view(), name='book-update'),  # Update a book
-    path('books/delete/<int:pk>/', DeleteView.as_view(), name='book-delete'),  # Delete a book
-     path('books/create/', CreateView.as_view(), name='book-create'),  # Create a book
+    # Books
+    path('books/', views.BookListView.as_view(), name='book-list'),
+    path('books/create/', views.BookCreateView.as_view(), name='book-create'),
+    path('books/<int:pk>/', views.BookDetailView.as_view(), name='book-detail'),
+    path('books/<int:pk>/update/', views.BookUpdateView.as_view(), name='book-update'),
+    path('books/<int:pk>/delete/', views.BookDeleteView.as_view(), name='book-delete'),
+
+    # Authors
+    path('authors/', views.AuthorListView.as_view(), name='author-list'),
+    path('authors/<int:pk>/', views.AuthorDetailView.as_view(), name='author-detail'),
 ]
