@@ -1,22 +1,29 @@
+# api/models.py
 from django.db import models
 
-# Author model to store author information
 class Author(models.Model):
-    name = models.CharField(max_length=50)  # Stores the author's name, max length 100 characters
+    """
+    Represents an author. Simple model with a name field.
+    The related_name on Book.author is 'books', so for an author instance you can access
+    author.books.all() to get all books.
+    """
+    name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
 
 
-# Book model to store book information with a relationship to Author
 class Book(models.Model):
-    title = models.CharField(max_length=50)  # Stores the book's title, max length 200 characters
-    publication_year = models.IntegerField()   # Stores the year the book was published
-
-    Author= models.ForeignKey(
-        Author, 
-        on_delete=models.CASCADE, # Deletes books if the associated author is deleted
-        related_name="books")   # Allows reverse access from Author to related Books
+    """
+    Represents a book. Fields:
+    - title: short title string
+    - publication_year: positive integer for the year (we'll validate it in the serializer)
+    - author: FK to Author establishing one-to-many (one author → many books)
+    """
+    title = models.CharField(max_length=255)
+    publication_year = models.PositiveIntegerField()
+    # related_name='books' makes reverse access meaningful: author.books.all()
+    author = models.ForeignKey(Author, related_name='books', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.title
+        return f"{self.title} ({self.publication_year})"
