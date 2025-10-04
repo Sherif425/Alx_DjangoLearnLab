@@ -1,9 +1,15 @@
+from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required, UserPassesTestMixin
 from .models import Post
 from django.contrib.auth.models import User
+from .forms import ProfileForm
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.shortcuts import render, redirect
+
 
 # List all posts
 class PostListView(ListView):
@@ -62,3 +68,19 @@ class ProfileView(ListView):
         context = super().get_context_data(**kwargs)
         context["profile_user"] = User.objects.get(username=self.kwargs.get("username"))
         return context
+
+
+@method_decorator(login_required, name="dispatch")
+class ProfileUpdateView(View):
+    template_name = "blog/profile.html"
+
+    def get(self, request):
+        form = ProfileForm(instance=request.user)
+        return render(request, self.template_name, {"form": form})
+
+    def post(self, request):
+        form = ProfileForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()  # 👈 this ensures "save()" exists
+            return redirect("blog:profile")
+        return render(request, self.template_name, {"form": form})
