@@ -150,3 +150,23 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         self.object.delete()
         messages.success(request, "Comment deleted.")
         return redirect(post_url)
+
+
+class AddCommentView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "comment_form.html"
+
+    def form_valid(self, form):
+        # Attach the logged-in user as author
+        form.instance.author = self.request.user
+        # Attach the post from pk in URL
+        post_obj = get_object_or_404(Post, pk=self.kwargs['pk'])
+        form.instance.post = post_obj
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        # After adding comment, go back to post detail
+        return reverse_lazy("post-detail-pk", kwargs={"pk": self.kwargs["pk"]})
+
+
