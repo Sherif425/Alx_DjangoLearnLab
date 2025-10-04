@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Profile, Comment, Post
 from taggit.models import Tag
+from taggit.forms import TagWidget
 
 # Registration form with email
 class UserRegisterForm(UserCreationForm):
@@ -54,6 +55,9 @@ class PostForm(forms.ModelForm):
     class Meta:
         model = Post
         fields = ['title', 'content', 'tags']
+        widgets = {
+            'tags': TagWidget(),  
+        }
 
     def clean_tags(self):
         # normalize tags: split by commas, strip whitespace, remove empties
