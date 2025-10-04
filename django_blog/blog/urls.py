@@ -9,7 +9,7 @@ urlpatterns = [
     path("post/new/", views.PostCreateView.as_view(), name="post-create"),
     path("post/<int:pk>/", views.PostDetailView.as_view(), name="post-detail-pk"),
     path("post/<slug:slug>/", views.PostDetailView.as_view(), name="post-detail"),
-    path("post/<int:pk>/edit/", views.PostUpdateView.as_view(), name="post-edit"),
+    path("post/<int:pk>/update/", views.PostUpdateView.as_view(), name="post-edit"),
     path("post/<int:pk>/delete/", views.PostDeleteView.as_view(), name="post-delete"),
 
     # Auth
