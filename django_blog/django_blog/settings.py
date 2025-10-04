@@ -40,6 +40,7 @@ INSTALLED_APPS = [
 
     # my_apps
     'blog',
+    'taggit',
 ]
 
 MIDDLEWARE = [

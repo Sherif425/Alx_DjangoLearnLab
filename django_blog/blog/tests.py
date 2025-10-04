@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.test import TestCase
 from django.urls import reverse
 from django.contrib.auth.models import User
-from .models import Post, Comment
+from .models import  Comment , Post
 
 class CommentTests(TestCase):
     def setUp(self):
@@ -32,3 +32,36 @@ class CommentTests(TestCase):
         # not allowed - should not change
         c.refresh_from_db()
         self.assertEqual(c.content, 'x')
+
+
+
+from django.test import TestCase
+from django.urls import reverse
+from django.contrib.auth.models import User
+from .models import Post
+
+class TagSearchTests(TestCase):
+    def setUp(self):
+        u = User.objects.create_user('u','u@example.com','pass')
+        self.p1 = Post.objects.create(title='Foo', content='bar', author=u, slug='foo')
+        self.p1.tags.add('news','django')
+        self.p2 = Post.objects.create(title='Django tips', content='tips content', author=u, slug='django-tips')
+        self.p2.tags.add('django')
+
+    def test_tag_listing(self):
+        resp = self.client.get(reverse('blog:tag-posts', kwargs={'tag':'django'}))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Django tips')
+        self.assertContains(resp, 'Foo')
+
+    def test_search_title(self):
+        resp = self.client.get(reverse('blog:search') + '?q=Foo')
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Foo')
+
+    def test_search_tag(self):
+        resp = self.client.get(reverse('blog:search') + '?q=django')
+        self.assertEqual(resp.status_code, 200)
+        # both posts have django tag
+        self.assertContains(resp, 'Foo')
+        self.assertContains(resp, 'Django tips')

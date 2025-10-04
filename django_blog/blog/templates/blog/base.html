@@ -30,5 +30,11 @@
     {% block content %}{% endblock %}
 
 
+    <form method="get" action="{% url 'blog:search' %}" class="search-form" style="display:inline;">
+        <input type="search" name="q" placeholder="Search posts..." value="{{ request.GET.q|default_if_none:'' }}">
+         <button type="submit">Search</button>
+    </form>
+
+
 </body>
 </html>

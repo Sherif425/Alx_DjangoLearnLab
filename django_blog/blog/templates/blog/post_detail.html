@@ -53,3 +53,12 @@
 {% else %}
   <p><a href="{% url 'blog:login' %}?next={{ request.path }}">Log in</a> to leave a comment.</p>
 {% endif %}
+
+{% if post.tags.all %}
+  <p>Tags:
+    {% for t in post.tags.all %}
+      <a href="{% url 'blog:tag-posts' tag=t.name %}">{{ t.name }}</a>{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+  </p>
+{% endif %}
+

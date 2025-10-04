@@ -1,0 +1,17 @@
+<ul class="post-list">
+  {% for post in posts %}
+    <li>
+      <h2><a href="{% url 'blog:post-detail' slug=post.slug %}">{{ post.title }}</a></h2>
+      <p>{{ post.content|truncatewords:30 }}</p>
+      <p><small>By {{ post.author.username }} | {{ post.published_date }}</small></p>
+      {% if post.tags.all %}
+        <p>
+          Tags:
+          {% for t in post.tags.all %}
+            <a href="{% url 'blog:tag-posts' tag=t.name %}">{{ t.name }}</a>{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+        </p>
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>

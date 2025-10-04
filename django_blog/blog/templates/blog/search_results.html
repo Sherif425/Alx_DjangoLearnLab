@@ -1,0 +1,11 @@
+{% extends "blog/base.html" %}
+{% block title %}Search results{% endblock %}
+{% block content %}
+  <h1>Search results for "{{ request.GET.q }}"</h1>
+  {% if posts %}
+    {% include "blog/_post_list_items.html" with posts=posts %}
+    {% include "blog/_pagination.html" %}
+  {% else %}
+    <p>No posts matched your search.</p>
+  {% endif %}
+{% endblock %}

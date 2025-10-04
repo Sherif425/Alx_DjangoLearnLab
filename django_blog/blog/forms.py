@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Profile, Comment
+from .models import Profile, Comment, Post
+from taggit.models import Tag
 
 # Registration form with email
 class UserRegisterForm(UserCreationForm):
@@ -45,3 +46,29 @@ class ProfileForm(forms.ModelForm):
         model = User
         fields = ["username", "first_name", "last_name", "email"]
 
+
+class PostForm(forms.ModelForm):
+    # tags will be presented as a simple input where users can add comma-separated tags
+    tags = forms.CharField(required=False, help_text="Comma-separated tags", widget=forms.TextInput())
+
+    class Meta:
+        model = Post
+        fields = ['title', 'content', 'tags']
+
+    def clean_tags(self):
+        # normalize tags: split by commas, strip whitespace, remove empties
+        raw = self.cleaned_data.get('tags', '')
+        if not raw:
+            return ''
+        tags = [t.strip() for t in raw.split(',') if t.strip()]
+        return ','.join(tags)
+
+    def save(self, commit=True):
+        # override to handle taggit
+        tags_raw = self.cleaned_data.pop('tags', '')
+        instance = super().save(commit=commit)
+        if tags_raw is not None:
+            tags = [t.strip() for t in tags_raw.split(',') if t.strip()]
+            # set tags replacing existing
+            instance.tags.set(*tags)
+        return instance

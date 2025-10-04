@@ -11,7 +11,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.db.models import Q
 
 
 
@@ -170,3 +170,35 @@ class AddCommentView(LoginRequiredMixin, CreateView):
         return reverse_lazy("post-detail-pk", kwargs={"pk": self.kwargs["pk"]})
 
 
+class SearchResultsView(ListView):
+    model = Post
+    template_name = "blog/search_results.html"
+    context_object_name = "posts"
+    paginate_by = 10
+
+    def get_queryset(self):
+        q = self.request.GET.get('q', '').strip()
+        if not q:
+            return Post.objects.none()
+        # search title, content, tag names
+        qs = Post.objects.filter(
+            Q(title__icontains=q) |
+            Q(content__icontains=q) |
+            Q(tags__name__icontains=q)
+        ).distinct().order_by('-published_date')
+        return qs
+
+class TagListView(ListView):
+    model = Post
+    template_name = "blog/tag_posts.html"
+    context_object_name = "posts"
+    paginate_by = 10
+
+    def get_queryset(self):
+        tag = self.kwargs.get('tag')
+        return Post.objects.filter(tags__name__iexact=tag).distinct().order_by('-published_date')
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['tag'] = self.kwargs.get('tag')
+        return ctx

@@ -1,0 +1,7 @@
+{% extends "blog/base.html" %}
+{% block title %}Posts tagged "{{ tag }}"{% endblock %}
+{% block content %}
+  <h1>Posts tagged "{{ tag }}"</h1>
+  {% include "blog/_post_list_items.html" with posts=posts %}
+  {% include "blog/_pagination.html" %}
+{% endblock %}
