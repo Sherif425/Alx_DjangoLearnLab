@@ -17,6 +17,14 @@ urlpatterns = [
     path("logout/", views_auth.logout_view, name="logout"),
     path("register/", views_auth.register, name="register"),
 
+    # Profile
     path("profile/<str:username>/", views.ProfileView.as_view(), name="profile"),
-path("profile/", views.ProfileUpdateView.as_view(), name="profile"),
+    path("profile/", views.ProfileUpdateView.as_view(), name="profile"),
+
+    # Comments
+# near other patterns
+    path("post/<slug:slug>/comments/new/", views.CommentCreateView.as_view(), name="comment-create"),
+    path("comments/<int:pk>/edit/", views.CommentUpdateView.as_view(), name="comment-edit"),
+    path("comments/<int:pk>/delete/", views.CommentDeleteView.as_view(), name="comment-delete"),
+
 ]

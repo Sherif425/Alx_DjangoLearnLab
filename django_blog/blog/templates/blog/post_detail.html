@@ -18,3 +18,38 @@
 
   <p><a href="{% url 'blog:post-list' %}">← Back to all posts</a></p>
 {% endblock %}
+
+<hr>
+
+<section id="comments">
+  <h3>Comments ({{ post.comments.count }})</h3>
+
+  {% for comment in post.comments.all %}
+    <div class="comment">
+      <p><strong>{{ comment.author.username }}</strong> — <small>{{ comment.created_at|date:"SHORT_DATETIME_FORMAT" }}</small></p>
+      <div>{{ comment.content|linebreaks }}</div>
+      {% if user == comment.author %}
+        <p>
+          <a href="{% url 'blog:comment-edit' pk=comment.pk %}">Edit</a> |
+          <a href="{% url 'blog:comment-delete' pk=comment.pk %}">Delete</a>
+        </p>
+      {% endif %}
+    </div>
+    <hr>
+  {% empty %}
+    <p>No comments yet. Be the first to comment!</p>
+  {% endfor %}
+</section>
+
+{% if user.is_authenticated %}
+  <section id="add-comment">
+    <h4>Leave a comment</h4>
+    <form method="post" action="{% url 'blog:comment-create' slug=post.slug %}">
+      {% csrf_token %}
+      {{ form.as_p }} {# We'll pass 'form' in context if rendering via DetailView; otherwise CreateView handles separate page #}
+      <button type="submit">Submit comment</button>
+    </form>
+  </section>
+{% else %}
+  <p><a href="{% url 'blog:login' %}?next={{ request.path }}">Log in</a> to leave a comment.</p>
+{% endif %}

@@ -1,14 +1,18 @@
 from django.views import View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required, UserPassesTestMixin
-from .models import Post
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+# from django.contrib.auth.decorators import login_required, UserPassesTestMixin
+from .models import Post, Comment
 from django.contrib.auth.models import User
-from .forms import ProfileForm
+from .forms import ProfileForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.shortcuts import render, redirect, get_object_or_404
+
+
 
 
 # List all posts
@@ -26,6 +30,11 @@ class PostDetailView(DetailView):
     context_object_name = "post"
     slug_field = "slug"
     slug_url_kwarg = "slug"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['form'] = CommentForm()
+        return ctx
 
 
 # Create a new post
@@ -84,3 +93,60 @@ class ProfileUpdateView(View):
             form.save()  # 👈 this ensures "save()" exists
             return redirect("blog:profile")
         return render(request, self.template_name, {"form": form})
+
+
+class CommentCreateView(LoginRequiredMixin, CreateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "blog/comment_form.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        # store post object for later use
+        self.post_obj = get_object_or_404(Post, slug=self.kwargs.get('slug'))
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        form.instance.post = self.post_obj
+        messages.success(self.request, "Comment posted.")
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return self.post_obj.get_absolute_url()
+
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+    template_name = "blog/comment_form.html"
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def handle_no_permission(self):
+        messages.error(self.request, "You are not allowed to edit this comment.")
+        return redirect(self.get_success_url())
+
+    def get_success_url(self):
+        return self.get_object().post.get_absolute_url()
+
+    def form_valid(self, form):
+        messages.success(self.request, "Comment updated.")
+        return super().form_valid(form)
+
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Comment
+    template_name = "blog/comment_confirm_delete.html"
+
+    def test_func(self):
+        comment = self.get_object()
+        return self.request.user == comment.author
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        post_url = self.object.post.get_absolute_url()
+        self.object.delete()
+        messages.success(request, "Comment deleted.")
+        return redirect(post_url)
