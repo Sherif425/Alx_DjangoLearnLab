@@ -36,6 +36,9 @@ urlpatterns = [
 
     path('post/<int:pk>/', views.DetailView.as_view(), name='post-detail-pk'),
     path('post/<slug:slug>/', views.DetailView.as_view(), name='post-detail'),
+
+    # Tags
+    path('tags/<slug:tag_slug>/', views.PostByTagListView.as_view(), name='posts_by_tag'),
 ]
 
 

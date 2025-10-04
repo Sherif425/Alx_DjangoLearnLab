@@ -56,7 +56,7 @@ class PostForm(forms.ModelForm):
         model = Post
         fields = ['title', 'content', 'tags']
         widgets = {
-            'tags': TagWidget(),  
+            'tags': TagWidget(),
         }
 
     def clean_tags(self):

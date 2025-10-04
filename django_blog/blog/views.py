@@ -12,6 +12,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from taggit.models import Tag
 
 
 
@@ -90,7 +91,7 @@ class ProfileUpdateView(View):
     def post(self, request):
         form = ProfileForm(request.POST, instance=request.user)
         if form.is_valid():
-            form.save()  # 👈 this ensures "save()" exists
+            form.save()
             return redirect("blog:profile")
         return render(request, self.template_name, {"form": form})
 
@@ -202,3 +203,17 @@ class TagListView(ListView):
         ctx = super().get_context_data(**kwargs)
         ctx['tag'] = self.kwargs.get('tag')
         return ctx
+
+class PostByTagListView(ListView):
+    model = Post
+    template_name = 'blog/post_list.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        tag_slug = self.kwargs.get('tag_slug')
+        return Post.objects.filter(tags__slug=tag_slug)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['tag'] = self.kwargs.get('tag_slug')
+        return context
